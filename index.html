@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Teste de Localização</title>
+</head>
+<body>
+  <h2>Teste de Localização</h2>
+  <button onclick="getLocation()">Compartilhar minha localização</button>
+  <p id="demo"></p>
+
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else {
+        document.getElementById("demo").innerHTML =
+          "Geolocalização não é suportada neste navegador.";
+      }
+    }
+
+    function showPosition(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      document.getElementById("demo").innerHTML =
+        "Localização capturada e enviada!<br>" +
+        "Latitude: " + latitude + "<br>Longitude: " + longitude;
+
+      // Enviar para endpoint (ex.: webhook.site para testes)
+      fetch("https://webhook.site/SEU_ENDPOINT_AQUI", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lat: latitude, lng: longitude })
+      })
+      .then(res => console.log("Enviado com sucesso", res))
+      .catch(err => console.error("Erro ao enviar:", err));
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("Usuário negou o pedido de geolocalização.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Informações de localização indisponíveis.");
+          break;
+        case error.TIMEOUT:
+          alert("O pedido para obter a localização expirou.");
+          break;
+        case error.UNKNOWN_ERROR:
+          alert("Um erro desconhecido ocorreu.");
+          break;
+      }
+    }
+  </script>
+</body>
+</html>
